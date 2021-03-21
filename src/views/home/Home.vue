@@ -1,18 +1,27 @@
 <template>
   <div id="home" class="wrapper">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
+    <!--  实现tab-control吸顶效果  -->
+    <tab-control :titles="['流行','新款','精选']"
+                 @tabClick="tabClick"
+                 ref="tabControl1"
+                 class="tab-control"
+                 v-show="isTabFixed"
+                  />
     <scroll class="content"
             ref="scroll"
             :probe-type="3"
             @scroll="contentScroll"
             :pull-up-load="true"
             @pullingUp="loadMore">
-      <home-swiper :banners="banners"/>
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"/>
       <recommend-view :recommends="recommends"/>
       <feature-view/>
       <tab-control class="tab-control"
                    :titles="['流行','新款','精选']"
-                    @tabClick="tabClick"/>
+                   @tabClick="tabClick"
+                   ref="tabControl2"
+                    />
       <goods-list :goods="showGoods"/>
     </scroll>
     <!--组件内部触发点击事件-->
@@ -109,15 +118,27 @@
               this.currentType = 'sell'
               break
           }
+          this.$refs.tabControl1.currentIndex = index;
+          this.$refs.tabControl2.currentIndex = index;
         },
         backClick(){
           this.$refs.scroll.scrollTo(0,0)
         },
         contentScroll(position){
+          //1.判断BackTop是否显示
           this.isShowBackTop = (-position.y) > 1000
+          // console.log(position)
+
+          //  2.决定tabControl是否吸顶(position:fixed)
+          this.isTabFixed = (-position.y) > this.tabOffsetTop
+
         },
         loadMore(){
           this.getHomeGoods(this.currentType)
+        },
+        swiperImageLoad(){
+          //组件没有offsetTop，需要获取对应的DOM元素再调用offsetTop
+          this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
         },
         /**
          * 网络请求相关的方法
@@ -139,6 +160,7 @@
             // 改变页码
             this.goods[type].page += 1
 
+            //完成上拉加载更多
             this.$refs.scroll.finishPullUp()
           })
         }
@@ -158,18 +180,19 @@
     background-color: var(--color-tint);
     color: #fff;
 
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    z-index: 9;
+    /*在使用浏览器原生滚动时, 为了让导航不跟随一起滚动*/
+    /*position: fixed;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    /*top: 0;*/
+    /*z-index: 9;*/
   }
 
-  .tab-control {
-    position: sticky;
-    top: 44px;
-    z-index: 9;
-  }
+  /*.tab-control {*/
+  /*  position: sticky;*/
+  /*  top: 44px;*/
+  /*  z-index: 9;*/
+  /*}*/
 
   .content {
     overflow: hidden;
@@ -179,6 +202,11 @@
     bottom: 49px;
     left: 0;
     right: 0;
+  }
+  .tab-control {
+    position: relative;
+    z-index: 9;
+    background-color: #fff;
   }
 
   /*.content {*/

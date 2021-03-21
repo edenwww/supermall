@@ -39,9 +39,9 @@
         })
 
         //  2.监听滚动的位置
-        if(this.probeType === 2 || this.probeType ===4){
+        if(this.probeType === 2 || this.probeType ===3){
           this.scroll.on('scroll',(position) => {
-            console.log(position)
+            // console.log(position)
             this.$emit('scroll',position)
           })
         }
@@ -69,7 +69,6 @@
           return this.scroll ? this.scroll.y : 0
         }
       }
-
 
     }
 </script>
