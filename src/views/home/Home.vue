@@ -70,7 +70,15 @@
       destroyed() {
         console.log('home destroy');
       },
-      created() {
+      activated(){
+        //速度->0 尽快回到原先停留的位置
+        this.$refs.scroll.scrollTo(0,this.saveY,0)
+        this.$refs.scroll.refresh()
+      },
+      deactivated() {
+        this.saveY = this.$refs.scroll.getScrollY()
+      },
+    created() {
       //  1.请求多个数据
         this.getHomeMultidata()
       //  请求商品数据
