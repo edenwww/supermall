@@ -24,7 +24,7 @@
                     />
       <goods-list :goods="showGoods"/>
     </scroll>
-    <!--组件内部触发点击事件-->
+    <!--native：组件内部触发点击事件  =>可以改为混入方式-->
     <back-top @click.native="backClick" v-show="isShowBackTop"/>
   </div>
 </template>
