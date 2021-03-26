@@ -10,9 +10,10 @@
         <detail-comment-info :comment-info="commentInfo" ref="comment"/>
         <goods-list ref="recommend" :goods="recomends"/>
       </scroll>
-      <detail-bottom-bar @addToCart="addToCart"/>
+      <detail-bottom-bar @addCart="addToCart"/>
 <!--      native：组件内部触发点击事件   -->
       <back-top @click.native="backTop" v-show="isShowBackTop"/>
+<!--      <toast :message="message" :show="show"/>-->
     </div>
 </template>
 
@@ -29,11 +30,13 @@
   import Scroll from "components/common/scroll/Scroll";
   import GoodsList from "components/content/goods/GoodsList";
 
+  // import Toast from "components/common/toast/Toast";
+
   import {getDetail,Goods,Shop,GoodsParam,getRecommend} from "network/detail";
   import {debounce} from "common/utils";
   import {itemListenerMixin,backTopMixin} from "common/mixin";
 
-  // import {mapActions} from "vuex";
+  import {mapActions} from "vuex";
 
   export default {
       name: "Detail",
@@ -47,7 +50,8 @@
         DetailCommentInfo,
         DetailBottomBar,
         Scroll,
-        GoodsList
+        GoodsList,
+        // Toast
       },
       mixins:[itemListenerMixin,backTopMixin],
       data(){
@@ -64,6 +68,8 @@
           getThemeTopY:null,
           currentIndex:0,
           isShowBackTop:false,
+          // message:"",
+          // show:false
         }
       },
       created() {
@@ -109,7 +115,8 @@
         },100);
       },
     methods:{
-      // ...mapActions(["addCart"]),
+      //  设置要映射的函数
+      ...mapActions(["addCart"]),
       imageLoad(){
         this.$refs.scroll.refresh()
         this.getThemeTopY();
@@ -139,11 +146,21 @@
         product.desc = this.goods.desc;
         product.price = this.goods.realPrice;
 
-        this.$store.dispatch("addCart",product)
+        // this.$store.dispatch("addCart",product)
 
-        // this.addCart(product).then((res) => {
-        //   // this.$toast.show(res,2000)
-        // })
+        this.addCart(product).then((res) => {
+          //Toast未封装时使用，需要先注册组件
+          // this.show = true;
+          // this.message = res;
+          // setTimeout(() => {
+          //   this.show = false;
+          //   this.message = "";
+          // }, 1500);
+
+          //对Toast封装后使用
+          this.$toast.show(res,2000)
+          // console.log(this.$toast);
+        })
       }
     }
   }

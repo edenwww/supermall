@@ -1,23 +1,20 @@
-import {ADD_COUNTER,ADD_TO_CART} from './mutations-types'
+import {
+  ADD_COUNTER,
+  ADD_TO_CART,
+} from './mutations-types'
 
 export default {
-  addCart(context,product)
-  {
-    let oldProduct=null
-    for (let item of context.state.cartList){
-      if(item.iid==product.iid)
-        oldProduct=item
-    }
-
-    if ( oldProduct!=null )
-    {
-      context.commit("addCounter",oldProduct)
-    }
-    else
-    {
-      //该商品第一次加入购物车，count初始化为1
-      product.count=1
-      context.commit("addCart",product)
-    }
+  addCart(context, payload) {
+    return new Promise((resolve, reject) => {
+      let oldProduct = context.state.cartList.find(item => item.iid === payload.iid)
+      if (oldProduct) {
+        context.commit(ADD_COUNTER, oldProduct)
+        resolve('当前的商品数量+1')
+      } else {
+        payload.count = 1
+        context.commit(ADD_TO_CART, payload)
+        resolve('添加了新的商品')
+      }
+    })
   }
 }
