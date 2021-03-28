@@ -98,4 +98,4 @@ export default {
   text-align: center;
   color: #ffffff;
 }
-</style> 
+</style>
